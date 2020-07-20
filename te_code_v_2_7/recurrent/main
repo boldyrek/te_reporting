@@ -1,0 +1,168 @@
+#!/home/dev/.conda/envs/py365/bin/python3.6
+"""
+Confidential and Proprietary (c) Copyright 2015-2019 Cerebri AI Inc. and Cerebri AI Corporation
+
+Version: ttp_2_5
+Author: Sathish K Lakshmipathy
+Purpose: config file - new purchase
+"""
+##########################################################################################################
+## LOCATION
+##########################################################################################################
+seed = 3
+
+DATA_PATH = "/jupyter-notebooks/sathish/tf_tta_data/"
+
+SAVE_DATA_PATH = "/jupyter-notebooks/sathish/tf_tta_data/te_test/"
+
+MODEL_PATH = "/jupyter-notebooks/sathish/tf_tta_data/te_test/"
+
+LOG_PATH = "/jupyter-notebooks/sathish/tf_tta_data/te_test/"
+
+SAVE_CONFIG_PATH = "/jupyter-notebooks/sathish/tf_tta_data/te_test/"
+
+
+##########################################################################################################
+## INTERMEDIATE DATA PATH
+##########################################################################################################
+
+GEN_PREPROCESS_PATH = SAVE_DATA_PATH + "general_preprocessing_"
+
+PREPROCESSED_PATH = SAVE_DATA_PATH + "preprocessing_"
+
+IMPUTATION_TRAIN_PATH = SAVE_DATA_PATH + "imputed_train_"
+IMPUTATION_PREDICT_PATH = SAVE_DATA_PATH + "imputed_predict_"
+
+ENRICH_PATH = SAVE_DATA_PATH + "enriched_train_"
+
+PRED_SPLIT_PATH = SAVE_DATA_PATH + "split_pred_"
+TRAIN_SPLIT_PATH = SAVE_DATA_PATH + "split_train_"
+VALIDATE_SPLIT_PATH = SAVE_DATA_PATH + "split_validate_"
+
+SAMPLED_VAL_PATH = SAVE_DATA_PATH + "sampled_val_"
+SAMPLED_TRAIN_PATH = SAVE_DATA_PATH + "sampled_"
+
+FINAL_TRAIN_PATH = SAVE_DATA_PATH + "final_train_"
+FINAL_VALIDATE_PATH = SAVE_DATA_PATH + "final_validate_"
+FINAL_PREDICT_PATH = SAVE_DATA_PATH + "final_predict_"
+
+MODEL_PATH = SAVE_DATA_PATH + "model_"
+SCORE_PATH = SAVE_DATA_PATH + "pred_scores_"
+TEST_SCORE_PATH = SAVE_DATA_PATH + "test_scores_"
+
+##########################################################################################################
+## OPERATION VARIABLES
+##########################################################################################################
+
+DATA_FILE_DICT = {1:'prediction_data_2019-08-13_1.tsv',
+                  2:'prediction_data_2019-08-13_2.tsv'}
+
+# Mention the number of training files from the list of files above
+# Due the memory restrictions of VM/pandas only part of the data is used for optimization
+NO_TRAIN_FILE = 2
+
+# Train until an earlier date - format: 'YYYY-MM-DD' or False to use all data
+TRAIN_END_DATE = '2019-08-01'
+
+TRAIN_START_DATE = '2012-08-01'
+# This flag incidates if can use the reference events occuring after the TRAIN_END_DATE
+# This is used to include labels in the train data and tested on out of sample test customers
+INCLUDE_TEST_LABELS = 'False'
+
+# Example: 2quarters, 3months, 8weeks
+# test hyperparameters - If true, the model would be built with data
+# until period 2 and tested on period 1 data
+# If not, the model would be built with data until period 1
+# train, predict, both
+STEP = 'both'
+
+# Example: 2quarters, 3months, 8weeks
+TE_WINDOW = "3month"
+
+# Options: day, week, month, quarter, year
+# CTU_UNIT should be less than or equal to TE_WINDOW
+CTU_UNIT = "1quarter"
+
+REFERENCE_EVENT = ["purchase_new", "purchase_used"]
+
+N_YEARS = 7
+
+TE_TARGET_COL = "te_" + TE_WINDOW
+
+#start point to run pipeline
+RUN_ALL_RACKS = True
+RUNNING_RACK = "Modeling" # ["Modeling", "FeatureSelection", "Splitting"]
+
+TE_SPLITTING_PATH = "/efs/cerebri/model_results/results_2_12b_1/enriched_train_2020_02_22_"
+
+TE_FEATURE_SELECTION_TRAIN_PATH = "/jupyter-notebooks/sathish/tf_tta_data/te_test/sampled_2020_02_22_"
+TE_FEATURE_SELECTION_VALIDATE_PATH = "/jupyter-notebooks/sathish/tf_tta_data/te_test/sampled_val_2020_02_22_"
+TE_FEATURE_SELECTION_PREDICT_PATH = "/jupyter-notebooks/sathish/tf_tta_data/te_test/split_pred_2020_02_22_"
+
+TE_MODELING_TRAIN_PATH = "/jupyter-notebooks/sathish/tf_tta_data/te_test/final_train_2020_02_22_"
+TE_MODELING_VALIDATE_PATH = "/jupyter-notebooks/sathish/tf_tta_data/te_test/final_validate_2020_02_22_"
+TE_MODELING_PREDICT_PATH = "/jupyter-notebooks/sathish/tf_tta_data/te_test/final_predict_2020_02_22.pkl"
+
+# Is there a need to build validation models (compare fullpipelines)
+VALIDATION_MODEL = False
+
+# Reduce CV proportion
+# this is because the sampling portion would get bigger and the cv size needs to be reduced
+REDUCED_CV = False
+
+# Run QA test?
+QA_TEST = False
+
+#test on in_time sample for out of sample customers
+IN_TIME_TEST = True
+
+#drop correlated features in orchestrator
+DROP_FEATURE = False
+
+#remove low variance features after enrichment
+LOW_VAR_ENRICHED = False
+
+#Log transformation for specific columns
+# IF true make sure that the columns in TRANSFORMED_FEATURES are fine
+TRANSFORM = False
+
+# List the handpicked features for experiments
+EXPERIMENT_SELECTED_FEATURES = True
+# If True for EXPERIMENT_SELECTED_FEATURES, add the list of handpicked features below
+SELECTED_FEATURE_LIST = ['cai_ins_grs_cntrb_dcpp','cai_ins_grs_cntrb_rrsp','cai_ins_grs_wthdr_nreg','cai_ins_grs_cntrb_depsp','cai_ins_grs_trxn_simple_contribution',\
+                         'cai_ins_grs_trxn_super_contribution','cai_ins_grs_grs_trxn_n_funds','cai_ins_event_grs_mem_reqir_cntrb','cai_ins_event_grs_mem_vol_mtch_cntrb',\
+                         'cai_ins_grs_cntrb_m_vol_mtch_amt','cai_ins_grs_cntrb_empr_vol_mtch_amt','cai_ins_event_grs_deactivate_plan','cai_ins_event_grs_salarychange',\
+                         'cai_ins_event_cif_newarang_grs','cai_ins_event_tp_login_mobileapp','cai_ins_event_tp_login_webportal','cai_ins_event_gb_dental_service',\
+                         'cai_ins_event_gb_dental_reimburse','cai_ins_gb_dental_service_count','cai_ins_gb_dental_reimburse_count','cai_ins_gb_amt_chrg_tot_eedl',\
+                         'cai_ins_gb_amt_elig_tot_eedl','cai_ins_gb_amt_paid_tot_eedl','cai_ins_gb_amt_clm_eeml','cai_ins_gb_amt_elig_eeml',\
+                         'cai_ins_event_gb_add_benefit_sharewhocd_1','cai_ins_event_gb_add_benefit_sharewhocd_2','cai_ins_event_gb_bill_positive_benecdnm_101',\
+                         'cai_ins_event_gb_bill_positive_benecdnm_301','cai_ins_event_gb_bill_positive_benecdnm_502','cai_ins_event_gb_bill_zero_benecdnm_502',\
+                         'cai_ins_event_gb_bill_zero_benecdnm_851','cai_ins_event_gb_target_approch1','cai_ins_factor_cif_sex_cd_m','cai_ins_factor_gb_age',\
+                         'cai_ins_factor_gb_benecdnm_301','cai_ins_factor_gb_benecdnm_401','cai_ins_factor_gb_benecdnm_411','cai_ins_factor_gb_benecdnm_502',\
+                         'cai_ins_factor_gb_benecdnm_512','cai_ins_factor_gb_benecdnm_other','cai_ins_factor_gb_benetypecd_1','cai_ins_factor_gb_benetypecd_2',\
+                         'cai_ins_factor_gb_benetypecd_3','cai_ins_factor_gb_n_memberids','cai_ins_factor_grs_n_members','cai_ins_factor_grs_salary',\
+                         'cai_ins_gb_benecdnm_502_netchange','cai_ins_gb_benecdnm_512_netchange','cai_ins_gb_benecdnm_other_netchange','cai_ins_gb_benetypecd_3_netchange',\
+                         'cai_ins_gb_benetypecd_4_netchange','cai_ins_gb_bill_n_benecdnms','cai_ins_gb_bill_premtotalamt','cai_ins_gb_bill_premtotalamt_benecdnm_301',\
+                         'cai_ins_gb_bill_premtotalamt_benecdnm_401','cai_ins_gb_bill_premtotalamt_benecdnm_411']
+# Columns groups to change
+CHANGE_COL_GROUPS = ['IMPUTE_ZERO_COLS', 'CUMSUM_COLS', 'FACTOR_COLS', 'FFILL_COLS',\
+'FLB_TD_COLS', 'EVENT_COLS', 'TD_COLS', 'CUMMEDIAN_COLS', 'CUMMAX_COLS',\
+'REF_AGG_COLS', 'AGGREGATION_COLS', 'POSITIVE_INTERACTIONS', 'OUTBOUND_INTERACTIONS',\
+'CATEGORICAL_COLS', 'NEGATIVE_INTERACTIONS', 'INBOUND_INTERACTIONS']
+
+################################################################################################
+## MISC
+################################################################################################
+
+TE_CONV_DICT = {"day":{"month": 1/30.45, "year": 1/365,"week": 1/7,"quarter": 1/90, "day": 1},
+            "week":{"month": 1/4, "year": 1/52,"day": 7,"quarter": 1/12, "week": 1},
+            "month":{"week": 4, "year": 1/12,"day": 30.45,"quarter": 1/3, "month": 1},
+            "quarter":{"month": 3, "year": 1/4,"day": 91, "week": 12, "quarter": 1},
+             }
+
+TE_CTU_UNITS = ["day", "week", "month", "quarter", "year"]
+
+TE_WINDOW_UNITS_DICT = {
+            "month":12,
+            "quarter":4
+             }

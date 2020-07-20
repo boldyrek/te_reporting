@@ -1,0 +1,14 @@
+--2020-06-29 16:16:47--  https://cerebriai-my.sharepoint.com/:x:/r/personal/sundeep_cerebriai_com/_layouts/15/Doc.aspx?sourcedoc=%7BCF415556-C4CC-4DCC-ADF5-C5ADCF4B513C%7D
+Resolving cerebriai-my.sharepoint.com (cerebriai-my.sharepoint.com)... 13.107.136.9
+Connecting to cerebriai-my.sharepoint.com (cerebriai-my.sharepoint.com)|13.107.136.9|:443... connected.
+HTTP request sent, awaiting response... 301 Moved Permanently
+Location: https://cerebriai-my.sharepoint.com/personal/sundeep_cerebriai_com/_layouts/15/Doc.aspx?sourcedoc=%7BCF415556-C4CC-4DCC-ADF5-C5ADCF4B513C%7D&cid=8e49ef44-3823-4cb5-b1a7-637a425432b3 [following]
+--2020-06-29 16:16:48--  https://cerebriai-my.sharepoint.com/personal/sundeep_cerebriai_com/_layouts/15/Doc.aspx?sourcedoc=%7BCF415556-C4CC-4DCC-ADF5-C5ADCF4B513C%7D&cid=8e49ef44-3823-4cb5-b1a7-637a425432b3
+Reusing existing connection to cerebriai-my.sharepoint.com:443.
+HTTP request sent, awaiting response... 302 Found
+Location: https://cerebriai-my.sharepoint.com/personal/sundeep_cerebriai_com/_layouts/15/doc2.aspx?sourcedoc=%7BCF415556-C4CC-4DCC-ADF5-C5ADCF4B513C%7D&cid=8e49ef44-3823-4cb5-b1a7-637a425432b3 [following]
+--2020-06-29 16:16:48--  https://cerebriai-my.sharepoint.com/personal/sundeep_cerebriai_com/_layouts/15/doc2.aspx?sourcedoc=%7BCF415556-C4CC-4DCC-ADF5-C5ADCF4B513C%7D&cid=8e49ef44-3823-4cb5-b1a7-637a425432b3
+Reusing existing connection to cerebriai-my.sharepoint.com:443.
+HTTP request sent, awaiting response... 403 Forbidden
+2020-06-29 16:16:48 ERROR 403: Forbidden.
+
