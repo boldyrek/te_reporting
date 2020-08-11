@@ -13,17 +13,22 @@ def start_spark_session():
         .getOrCreate()
 
     return spark
-    
-def get_imputed_df():
+spark = start_spark_session()   
+
+def get_imputed_df( IMPUTATION_TRAIN_PATH ):
     """
     Load rack files: genereal preprocessing, preprocessing, imputed
     """
-    spark = start_spark_session()
-
-    imputed_file_name = "../data/imputed_train_2020_06_30_1.csv"
-    imputed_df = spark.read.format("csv").option("header", "true").load(imputed_file_name)
+    imputed_df = load_df( IMPUTATION_TRAIN_PATH )
 
     return imputed_df
+
+def load_df( df_path ):
+    """
+    load any df
+    """
+    df = spark.read.format("csv").option("header", "true").load( df_path )
+    return df
 
 
 def suffix_and_join_dfs(df1, df2, on_column ):

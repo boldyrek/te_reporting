@@ -5,15 +5,17 @@ Number of customers
 Number of rows	
 Number of customers with a positive outcome	
 """
-
+import sys
+sys.path.append("/home/boldyrek/mysoft/te/te_reporting/")
 from helper_functions import get_imputed_df, start_spark_session
-
+import config as cfg
 
 def get_num_party_ids_with_positive_outcome( imputed_df ):
     
-    target_column = 'te_2month'
+    target_column = cfg.TE_TARGET_COL
     where_clause = target_column + ' == 1'
-    num_party_ids_with_positive_outcome =\               imputed_df.where(where_clause).select('party_id').distinct().count()
+    num_party_ids_with_positive_outcome =\
+            imputed_df.where(where_clause).select('party_id').distinct().count()
     
     return num_party_ids_with_positive_outcome
 
@@ -21,7 +23,7 @@ def get_num_party_ids_with_positive_outcome( imputed_df ):
 def main():
     
     spark = start_spark_session()
-    imputed_df = get_imputed_df()
+    imputed_df = get_imputed_df( cfg.IMPUTATION_TRAIN_PATH )
 
     num_party_ids = imputed_df.select("party_id").distinct().count()
 
