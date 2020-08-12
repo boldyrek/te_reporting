@@ -1,6 +1,6 @@
 from pyspark.sql.types import IntegerType, DoubleType
 from pyspark.sql.functions import col
-
+import glob
 def get_df_with_descriptive_stats_for_columns( spark , df):
 
     """
@@ -29,14 +29,22 @@ def calc_column_max( one_col_df ):
     
     column = one_col_df.columns[0]
     summary_value = one_col_df.agg({column : 'max'}).collect()[0][0]
-
+    try:
+        summary_value = round( summary_value, 2)
+    except Exception as e:
+        print(e)
+    
     return summary_value
 
 
 def calc_column_min( one_col_df ):
     column = one_col_df.columns[0]
     summary_value = one_col_df.agg({column : 'min'}).collect()[0][0]
-
+    try:
+        summary_value = round( summary_value, 2)
+    except Exception as e:
+        print(e)
+    
     return summary_value
 
 
@@ -53,7 +61,6 @@ def calc_column_avg( one_col_df ):
 
 
 def calc_column_stddev( one_col_df ):
-    
     column = one_col_df.columns[0]
     summary_value = one_col_df.agg({column : 'stddev'}).collect()[0][0]
     try:
