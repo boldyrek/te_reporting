@@ -1,3 +1,33 @@
+###################################################################################################
+# Cerebri AI CONFIDENTIAL
+# Copyright (c) 2017-2020 Cerebri AI Inc., All Rights Reserved.
+#
+# NOTICE: All information contained herein is, and remains the property of Cerebri AI Inc.
+# and its subsidiaries, including Cerebri AI Corporation (together “Cerebri AI”).
+# The intellectual and technical concepts contained herein are proprietary to Cerebri AI
+# and may be covered by U.S., Canadian and Foreign Patents, patents in process, and are
+# protected by trade secret or copyright law.
+# Dissemination of this information or reproduction of this material is strictly
+# forbidden unless prior written permission is obtained from Cerebri AI. Access to the
+# source code contained herein is hereby forbidden to anyone except current Cerebri AI
+# employees or contractors who have executed Confidentiality and Non-disclosure agreements
+# explicitly covering such access.
+#
+# The copyright notice above does not evidence any actual or intended publication or
+# disclosure of this source code, which includes information that is confidential and/or
+# proprietary, and is a trade secret, of Cerebri AI. ANY REPRODUCTION, MODIFICATION,
+# DISTRIBUTION, PUBLIC PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE OF THIS SOURCE
+# CODE WITHOUT THE EXPRESS WRITTEN CONSENT OF CEREBRI AI IS STRICTLY PROHIBITED, AND IN
+# VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES. THE RECEIPT OR POSSESSION OF
+# THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS TO
+# REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL
+# ANYTHING THAT IT MAY DESCRIBE, IN WHOLE OR IN PART.
+###################################################################################################
+#!/home/dev/.conda/envs/py365/bin/python3.6
+##########################################################################################################
+## LOCATION
+##########################################################################################################
+
 from pyspark.sql.types import IntegerType, DoubleType
 from pyspark.sql.functions import col
 import glob
@@ -11,7 +41,6 @@ def get_df_with_descriptive_stats_for_columns( spark , df):
     columns = df.schema.names
     columns_with_stats = []  # append tuples to a list, later to create a spark df
     for col in columns: # for each column calculate stat values
-        print(col)
         one_column_df = df.select( col )
         minimum = calc_column_min( one_column_df )
         maximum = calc_column_max( one_column_df )
@@ -19,7 +48,6 @@ def get_df_with_descriptive_stats_for_columns( spark , df):
         stddev = calc_column_stddev( one_column_df )
         median = calc_column_median( one_column_df )
         columns_with_stats.append((col,maximum, minimum, mean, stddev, median))
-    print(columns_with_stats)
     columns_with_stats_df  = spark.createDataFrame( columns_with_stats, ['column_name','min','max','mean',  'stddev','median'] )
 
     return columns_with_stats_df 
@@ -32,7 +60,8 @@ def calc_column_max( one_col_df ):
     try:
         summary_value = round( summary_value, 2)
     except Exception as e:
-        print(e)
+        pass
+        #print(e)
     
     return summary_value
 
@@ -43,7 +72,8 @@ def calc_column_min( one_col_df ):
     try:
         summary_value = round( summary_value, 2)
     except Exception as e:
-        print(e)
+        pass
+        #print(e)
     
     return summary_value
 
@@ -55,7 +85,8 @@ def calc_column_avg( one_col_df ):
     try:
         summary_value = round( summary_value, 2)
     except Exception as e:
-        print(e)
+        pass
+        #print(e)
     
     return summary_value
 
@@ -66,7 +97,8 @@ def calc_column_stddev( one_col_df ):
     try:
         summary_value = round( summary_value, 2)
     except Exception as e:
-        print(e)
+        pass
+        #print(e)
     
     return summary_value
 
@@ -89,7 +121,8 @@ def calc_column_median( one_col_df ):
     try:
         summary_value = round( summary_value, 2)
     except Exception as e:
-        print(e)
+        pass
+        #print(e)
     
     return summary_value
 

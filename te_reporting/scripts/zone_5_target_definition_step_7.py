@@ -30,62 +30,35 @@
 
 """
 Te version 2.7
-Zone 5, step 2, stage I aggregation 
+Zone 5, step 7, target definition 
 
-After aggregating data to the day-level, create a table with row-wise listing of:	
-1. Event column name	Table1
-2. Total number of events for column over total number of events for ALL columns	Table1
-	
-Rationale: Proportion of events for a particular event column. Expected to be similar to zone 4 proportions	
+Descriptive statistics on the number of positive labels for across all customers
 
-Table 1	
-	
-	Num events / Total num events 
-Column 1	2%
-Column 2	5%
-Column 3	3%
-Column 4	5%
-Column 5	1%
-…	…
-Example 
-Date  	Purchase	Calls	Money spend
-1/1/00	0	3	50
-1/2/00	1	0	51
-1/3/00	0	4	52
-1/4/00	0	0	32
-1/5/00	1	1	0
-	   0.33	0.6	0.80
-
+Minimum    Maximum    Mean    Standard deviation    Median        
+1    2    1    1.5    1        
 """
 import sys
 sys.path.append("/home/boldyrek/mysoft/te/te_reporting/")
-from sys import argv
-import pyspark
-from pyspark.sql import SparkSession
-import pyspark.sql.functions as F
-from helper_functions import get_imputed_df, start_spark_session, load_df, write_to_excel, get_module_from_path
+from helper_functions import start_spark_session, get_imputed_df
+from col_stats import *
+from pyspark.sql.functions import col
+from helper_functions import get_imputed_df, start_spark_session, load_df, write_to_excel 
 import config as cfg
 
-def drop_garbage_cols(df):
-    """
-    Drop some of the unnesessary columns
-    """
-    columns_to_drop = ['level_0', 'index', 'Unnamed: 0', '_c0', 'party_id', 'event_date', 'CTU', 'event_id']
-    df_to_drop = df.select('*')
-    df_to_drop = df_to_drop.drop(*columns_to_drop)
-    
-    return df_to_drop
-
-"""
-*** MAIN ***
-"""
-
-
 spark = start_spark_session()
-prepro_df  = load_df(cfg.PREPROCESS_PATH)
-num_rows = prepro_df.count()
-event_rate_df = prepro_df.select([(F.count(F.when(prepro_df[c] != 0, c))/num_rows).alias(c) for c in prepro_df.columns])
-event_rate_df_clean =  drop_garbage_cols( event_rate_df)
-event_rate_df_clean_pd = event_rate_df_clean.toPandas().transpose().reset_index().rename(columns={0:'Column event rate ', 'index' : 'Column names'})
-event_rate_df_clean_spark = spark.createDataFrame(event_rate_df_clean_pd)
-write_to_excel(event_rate_df_clean_spark, "zone_5_stage_I_aggrega_step_2")
+imputed_df = get_imputed_df( cfg.IMPUTATION_TRAIN_PATH, cfg.IMPUTATION_PREDICT_PATH )
+
+"""
+take the targets where target is equal 1, group by party id, count how many 1 targets
+"""
+imputed_df_count = imputed_df.where("te_2month = 1").groupBy('party_id').agg({'te_2month' : 'count'})
+imputed_df_count_te_2month = imputed_df_count.select("count(te_2month)")
+minimum = calc_column_min(imputed_df_count_te_2month)
+maximum = calc_column_max(imputed_df_count_te_2month)
+mean = calc_column_avg(imputed_df_count_te_2month)
+stdev = calc_column_stddev(imputed_df_count_te_2month)
+median = calc_column_median(imputed_df_count_te_2month)
+positive_label_stats_across_customers_df = spark.createDataFrame([[minimum, maximum, mean, stdev, median]],\
+                      ['minimum', 'maximum','mean','stdev','median'])
+write_to_excel( positive_label_stats_across_customers_df , "zone_5_target_definitio_step_7")
+

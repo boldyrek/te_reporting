@@ -1,10 +1,43 @@
+###################################################################################################
+# Cerebri AI CONFIDENTIAL
+# Copyright (c) 2017-2020 Cerebri AI Inc., All Rights Reserved.
+#
+# NOTICE: All information contained herein is, and remains the property of Cerebri AI Inc.
+# and its subsidiaries, including Cerebri AI Corporation (together “Cerebri AI”).
+# The intellectual and technical concepts contained herein are proprietary to Cerebri AI
+# and may be covered by U.S., Canadian and Foreign Patents, patents in process, and are
+# protected by trade secret or copyright law.
+# Dissemination of this information or reproduction of this material is strictly
+# forbidden unless prior written permission is obtained from Cerebri AI. Access to the
+# source code contained herein is hereby forbidden to anyone except current Cerebri AI
+# employees or contractors who have executed Confidentiality and Non-disclosure agreements
+# explicitly covering such access.
+#
+# The copyright notice above does not evidence any actual or intended publication or
+# disclosure of this source code, which includes information that is confidential and/or
+# proprietary, and is a trade secret, of Cerebri AI. ANY REPRODUCTION, MODIFICATION,
+# DISTRIBUTION, PUBLIC PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE OF THIS SOURCE
+# CODE WITHOUT THE EXPRESS WRITTEN CONSENT OF CEREBRI AI IS STRICTLY PROHIBITED, AND IN
+# VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES. THE RECEIPT OR POSSESSION OF
+# THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS TO
+# REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL
+# ANYTHING THAT IT MAY DESCRIBE, IN WHOLE OR IN PART.
+###################################################################################################
+#!/home/dev/.conda/envs/py365/bin/python3.6
+##########################################################################################################
+## LOCATION
+##########################################################################################################
+import pickle
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 from xlsxwriter.workbook import Workbook
 import pandas as pd
-from openpyxl import load_workbook
+from openpyxl import load_workbook, Workbook
 import importlib.util
 from pyspark.sql.functions import lit
+import os
+import config_te_reporting as cfg 
+import sys
 
 def start_spark_session():
     """
@@ -39,6 +72,7 @@ def load_df( df_path ):
     load any df
     """
     df = spark.read.format("csv").option("header", "true").load( df_path )
+    df = df.drop('_c0')
     return df
 
 
@@ -67,7 +101,10 @@ def write_to_excel(df, sheet_name):
     How to write to excel
     https://stackoverflow.com/questions/42370977/how-to-save-a-new-sheet-in-an-existing-excel-file-using-pandas
     """
-    path = 'xls/output.xlsx'
+    if 'output.xlsx' not in os.listdir('xls'):
+        wb = Workbook()
+        wb.save('xls/output.xlsx')
+    path = 'xls/output.xlsx' 
     book = load_workbook(path)
     writer = pd.ExcelWriter(path, engine = 'openpyxl')
     writer.book = book
@@ -85,4 +122,46 @@ def get_module_from_path( module_name , module_path ):
     
     return my_module
     
-  
+def get_te_config_module():
+
+
+    path = cfg.TE_CONFIG_FILE_PATH
+    path_split = os.path.\
+        split(path)
+    module_name = path_split[1]
+    spec = importlib.util.spec_from_file_location(  module_name , path )
+    te_config_module = importlib.util.module_from_spec( spec )
+    spec.loader.exec_module( te_config_module )
+    return te_config_module
+     
+def get_te_constants_module():
+
+
+    path = cfg.TE_CONSTANTS_FILE_PATH
+    path_split = os.path.\
+        split(path)
+    module_name = path_split[1]
+    spec = importlib.util.spec_from_file_location(  module_name , path )
+    te_constants_module = importlib.util.module_from_spec( spec )
+    spec.loader.exec_module( te_constants_module )
+    
+    
+    return te_constants_module
+
+def get_te_load_pipeline_config_module():
+    sys.path.append(cfg.TE_PATH)
+    path = cfg.TE_LOAD_PIPELINE_CONFIG_FILE_PATH
+    path_split = os.path.\
+        split(path)
+    module_name = path_split[1]
+    print(path,module_name)
+    spec = importlib.util.spec_from_file_location(  module_name , path )
+    te_load_pipeline_config_module = importlib.util.module_from_spec( spec )
+    spec.loader.exec_module( te_load_pipeline_config_module )
+    return te_load_pipeline_config_module
+
+
+def load_final_train_df():
+    with open(cfg.FINAL_TRAIN_PATH, 'rb') as f:
+        final_train_df = pickle.load(f)[0] # loading tuple of train and test
+    return final_train_df

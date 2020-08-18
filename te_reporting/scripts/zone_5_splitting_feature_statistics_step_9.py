@@ -1,4 +1,37 @@
+###################################################################################################
+# Cerebri AI CONFIDENTIAL
+# Copyright (c) 2017-2020 Cerebri AI Inc., All Rights Reserved.
+#
+# NOTICE: All information contained herein is, and remains the property of Cerebri AI Inc.
+# and its subsidiaries, including Cerebri AI Corporation (together “Cerebri AI”).
+# The intellectual and technical concepts contained herein are proprietary to Cerebri AI
+# and may be covered by U.S., Canadian and Foreign Patents, patents in process, and are
+# protected by trade secret or copyright law.
+# Dissemination of this information or reproduction of this material is strictly
+# forbidden unless prior written permission is obtained from Cerebri AI. Access to the
+# source code contained herein is hereby forbidden to anyone except current Cerebri AI
+# employees or contractors who have executed Confidentiality and Non-disclosure agreements
+# explicitly covering such access.
+#
+# The copyright notice above does not evidence any actual or intended publication or
+# disclosure of this source code, which includes information that is confidential and/or
+# proprietary, and is a trade secret, of Cerebri AI. ANY REPRODUCTION, MODIFICATION,
+# DISTRIBUTION, PUBLIC PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE OF THIS SOURCE
+# CODE WITHOUT THE EXPRESS WRITTEN CONSENT OF CEREBRI AI IS STRICTLY PROHIBITED, AND IN
+# VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES. THE RECEIPT OR POSSESSION OF
+# THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS TO
+# REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL
+# ANYTHING THAT IT MAY DESCRIBE, IN WHOLE OR IN PART.
+###################################################################################################
+#!/home/dev/.conda/envs/py365/bin/python3.6
+##########################################################################################################
+## LOCATION
+##########################################################################################################
+
 """
+Te version 2.7
+Zone 5, step 9,  splitting feature statistic
+
 Difference in descriptive statistics between train and test							
 							
 	Delta minimum	Delta maximum	Delta mean	Delta standard deviation	Delta median	Kl divergence	KS test
@@ -10,9 +43,9 @@ Column 5
 Column 6							
 Column 7							
 
-Load 
-1. load imputed_train
-   load imputed_test
+High level pseudo code:
+1. load split_train
+   load split_pred
 2. calc min, max, sttdev, mean for train : get_descriptive_statistics_for_columns
  calc min, max, sttdev, mean for test : get_descriptive_statistics_for_columns
 3.join dfs :
@@ -27,29 +60,21 @@ joined_df = preprocessing_cols_stats_df_re.join(imputed_cols_stats_df, preproces
 
 import sys
 sys.path.append("/home/boldyrek/mysoft/te/te_reporting/")
-from helper_functions import get_imputed_df, start_spark_session, load_df
 from col_stats import *
 import config as cfg
 from helper_functions import *
 from scipy import stats
-
+from helper_functions import start_spark_session, get_imputed_df, suffix_and_join_dfs, write_to_excel, load_df
 
 
 spark = start_spark_session()
 
-test_df = spark.createDataFrame([(1,1,0),(1,1,1),(1,1,1),
-                                        (2,1,1),(2,2,0),
-                                            (3,1,1),(3,2,0),
-                                         (3,3,1),(3,3,0),
-                                        (4,3,0),(4,3,0)
-                                                  ], ['party_id', 'ctu', 'te_2month'])
-
 # step 1 loading dfs
-#imputed_train = load_df( cfg.IMPUTATION_TRAIN_PATH )
-#imputed_predict = load_df( cfg.IMPUTATION_PREDICT_PATH )
+imputed_train = load_df( cfg.SPLIT_TRAIN_PATH )
+imputed_predict = load_df( cfg.SPLIT_PRED_PATH )
 
-imputed_train = test_df
-imputed_predict = test_df
+#imputed_train = test_df
+#imputed_predict = test_df
 
 # step 2 getting descriptive statistics
 imputed_train_descriptive_stats = get_df_with_descriptive_stats_for_columns ( spark,  imputed_train )
@@ -75,7 +100,7 @@ def get_df_with_ks_stats( imputed_train, imputed_predict ):
             kd = str(round(ks[1], 2))
 
         except Exception as e:
-            print('col ',col ,e)
+            #print('col ',col ,e)
             p_value = ''
             kd = ''      
         col_ks.append((col,p_value, kd))   
@@ -85,7 +110,7 @@ def get_df_with_ks_stats( imputed_train, imputed_predict ):
 ks_stats_df = get_df_with_ks_stats (imputed_train, imputed_predict )
 #ks_stats_df.show()
 # Step 7 Join 
-delta_df.join(ks_stats_df, col('column_name') == col('column_name_ks')).\
+delta_df = delta_df.join(ks_stats_df, col('column_name') == col('column_name_ks')).\
     select('column_name','delta_min','delta_max','delta_mean','delta_stddev','delta_median',
-           'p_value','kd').show()
-
+           'p_value','kd')
+write_to_excel( delta_df, 'zone_5_split_fea_stats_ste_9')
